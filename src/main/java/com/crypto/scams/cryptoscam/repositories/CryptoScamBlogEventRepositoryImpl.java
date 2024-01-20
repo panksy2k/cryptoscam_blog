@@ -23,16 +23,15 @@ public class CryptoScamBlogEventRepositoryImpl implements CryptoScamBlogEventRep
   @Override
   public Future<CryptoScamBlogEvent> saveCryptoScamEvent(CryptoScamBlogEvent blogEvent) {
     String sql =
-      "insert into crypto_scam_event (title, description, other_reference_url, is_active, tags) values ($1, $2, $3, "
-        + "$4, $5) returning event_id;";
+      "insert into crypto_scam_event (event_id, title, description, other_reference_url, is_active, tags) values ($1, $2, $3, "
+        + "$4, $5, $6) returning event_id;";
 
     Tuple recordFieldsTuple =
-      Tuple.of(blogEvent.getTitle(), blogEvent.getDescription(), blogEvent.getReference(), blogEvent.getBlogActive(),
-        blogEvent.getTags());
+      Tuple.of(blogEvent.getId(), blogEvent.getTitle(), blogEvent.getDescription(), blogEvent.getReference(), blogEvent.getBlogActive(), blogEvent.getTags());
 
     Future<CryptoScamBlogEvent> persistedResult = this.pgClient.preparedQuery(sql)
       .execute(recordFieldsTuple)
-      .flatMap(rows -> {
+      .compose(rows -> {
         if (rows.rowCount() == 0) {
           return Future.failedFuture("Cannot insert the crypto blog event");
         }
@@ -65,8 +64,8 @@ public class CryptoScamBlogEventRepositoryImpl implements CryptoScamBlogEventRep
     return null;
   }
 
-  public Future<Void> createCryptoScamBlogEventTable(String sqlScript) {
-    return this.vtx.fileSystem().readFile(sqlScript)
+  public Future<Void> createCryptoScamBlogEventTable() {
+    return this.vtx.fileSystem().readFile("sql/blog.sql")
       .map(b -> b.toString())
       .compose(query -> pgClient.query(query).execute())
       .compose(rowsAffected -> Future.succeededFuture());

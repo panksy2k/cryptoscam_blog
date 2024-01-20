@@ -20,12 +20,12 @@ public class CryptoBlogEventController {
   public void createCryptoScamBlogEntry(RoutingContext context) {
     RequestBody body = context.body();
     _validator.validate(body.asJsonObject())
-      .compose(_service::saveCryptoScamEvent)
-      .onFailure(context::fail)
-      .onSuccess(cryptoBlog -> {
-        JsonObject responseBody = JsonObject.mapFrom(cryptoBlog);
+        .compose(event -> _service.saveCryptoScamEvent(event))
+        .onFailure(context::fail)
+        .onSuccess(cryptoBlog -> {
+          JsonObject responseBody = JsonObject.mapFrom(cryptoBlog);
 
-        context.response().setStatusCode(201).end(responseBody.encode());
-      });
+          context.response().setStatusCode(201).end(responseBody.encode());
+        });
   }
 }

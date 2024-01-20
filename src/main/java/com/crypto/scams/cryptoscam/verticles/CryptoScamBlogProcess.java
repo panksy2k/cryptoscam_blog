@@ -46,6 +46,7 @@ public class CryptoScamBlogProcess extends AbstractVerticle {
       .map(module -> {
         Injector injector = Guice.createInjector(module);
         CryptoScamBlogProcess mainVerticle = injector.getInstance(CryptoScamBlogProcess.class);
+        System.out.println("Dependency Injection Successful!");
         return mainVerticle;
       })
       .compose(vertx :: deployVerticle)

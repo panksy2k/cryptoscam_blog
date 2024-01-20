@@ -29,4 +29,7 @@ To run your application:
 * https://discord.gg/6ry7aqPWXy[Vert.x Discord]
 * https://gitter.im/eclipse-vertx/vertx-users[Vert.x Gitter]
 
-
+To create e BLOG entry:
+```
+http -f POST http://localhost:8080/api/blog/create/1 < /Users/pankajpardasani/Projects/cryptoscam/src/main/resources/blogCreate.json
+```

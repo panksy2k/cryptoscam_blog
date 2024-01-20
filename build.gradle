@@ -9,20 +9,26 @@ buildscript {
   }
 }
 
-group = "com.crypto.scams"
-version = "1.0.0-SNAPSHOT"
-
-apply plugin: 'application'
-
-application {
-  mainClassName = 'com.crypto.scams.cryptoscam.verticles.CryptoScamBlogProcess'
-}
-
 def vertxVersion = "4.5.1"
 def junitJupiterVersion = "5.9.1"
 //def launcherClassName = "io.vertx.core.Launcher"
 //def watchForChange = "src/**/*"
 //def doOnChange = "${projectDir}/gradlew classes"
+
+group = "com.crypto.scams"
+version = "1.0.0-SNAPSHOT"
+
+
+apply plugin: 'application'
+apply plugin: 'java'
+
+application {
+  mainClassName = 'com.crypto.scams.cryptoscam.verticles.CryptoScamBlogProcess'
+
+  /*run {
+    args "redeploy", "$watchForChange", "launcher-class", "$launcherClassName", "on-redeploy", "$doOnChange"
+  }*/
+}
 
 repositories {
   mavenLocal()
@@ -55,6 +61,16 @@ java {
   targetCompatibility = JavaVersion.VERSION_17
 }
 
+jar {
+  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+}
+
+test {
+  useJUnitPlatform()
+  testLogging {
+    events("PASSED", "SKIPPED", "FAILED")
+  }
+}
 dependencies {
   implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
   implementation("io.vertx:vertx-web-client")
@@ -72,8 +88,7 @@ dependencies {
 
   testImplementation("io.vertx:vertx-junit5")
   testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
+  testImplementation("org.testcontainers:junit-jupiter:1.16.2")
 }
-
-
 
 
