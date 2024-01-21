@@ -9,6 +9,8 @@ import io.vertx.sqlclient.RowIterator;
 import io.vertx.sqlclient.SqlClient;
 import io.vertx.sqlclient.Tuple;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
+import org.testcontainers.shaded.okio.Options;
 
 public class CryptoScamBlogEventRepositoryImpl implements CryptoScamBlogEventRepository {
 
@@ -51,7 +53,17 @@ public class CryptoScamBlogEventRepositoryImpl implements CryptoScamBlogEventRep
 
   @Override
   public Future<CryptoScamBlogEvent> updateCryptoScamEvent(CryptoScamBlogEvent blogEvent) {
-    return null;
+    String sqlUpdate = "update crypto_scam_event set title = $1, description = $2, other_reference_url = $3, is_active = $4, tags = $5 where event_id = $6";
+
+    return pgClient.preparedQuery(sqlUpdate)
+      .execute(Tuple.of(blogEvent.getTitle(), blogEvent.getDescription(), blogEvent.getReference(), blogEvent.getBlogActive(), blogEvent.getTags(), blogEvent.getId()))
+      .flatMap(rowset -> {
+          if(rowset.rowCount() == 1) {
+            return Future.succeededFuture(blogEvent);
+          }
+
+          return Future.failedFuture("Update to an existing Blog Event failed!");
+      });
   }
 
   @Override
@@ -61,7 +73,19 @@ public class CryptoScamBlogEventRepositoryImpl implements CryptoScamBlogEventRep
 
   @Override
   public Future<Optional<CryptoScamBlogEvent>> findCryptoScamEvent(long blogId) {
-    return null;
+    String sql = "select * from crypto_scam_event where event_id = $1";
+    CryptoBlogEventRowMapper mapper = new CryptoBlogEventRowMapper();
+
+    return pgClient.preparedQuery(sql)
+      .mapping(mapper)
+      .execute(Tuple.of(blogId))
+      .map(rs -> {
+        if(rs.rowCount() == 0) {
+            return Optional.empty();
+        }
+
+        return Optional.of(rs.iterator().next());
+      });
   }
 
   public Future<Void> createCryptoScamBlogEventTable() {

@@ -3,6 +3,7 @@ package com.crypto.scams.cryptoscam.repositories;
 import com.crypto.scams.cryptoscam.models.CryptoScamBlogEvent;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.junit5.Checkpoint;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 import io.vertx.pgclient.PgPool;
@@ -53,5 +54,44 @@ public class CryptoScamBlogEventRepositoryImplTest {
             context.completeNow();
         });
     });
+  }
+
+  @Test
+  public void testUpdateBlogEvent(VertxTestContext testContext) {
+    //Given
+    Checkpoint createCP = testContext.checkpoint();
+    Checkpoint updateCP = testContext.checkpoint();
+    CryptoScamBlogEvent initial =
+      new CryptoScamBlogEvent(1L, "Test Title", "Test Desc", "TEST REF", false, Arrays.asList("FRAUD"));
+
+    //When
+    testContext.verify(() -> {
+      SUT.saveCryptoScamEvent(initial)
+        .map(saved -> {
+          long persistedId = saved.getId();
+          Assertions.assertEquals(1L, persistedId);
+          createCP.flag();
+          return saved;
+        })
+        .map(existing -> new CryptoScamBlogEvent(existing.getId(), existing.getTitle(), existing.getDescription(),
+          existing.getReference(), true, Arrays.asList("scam")))
+        .compose(changedEntry -> {
+          updateCP.flag();
+          return SUT.updateCryptoScamEvent(changedEntry);
+        })
+        .map(updatedEventBlog -> updatedEventBlog.getId())
+        .compose(id -> SUT.findCryptoScamEvent(id))
+        .map(retrived -> {
+          Assertions.assertTrue(retrived.isPresent());
+          CryptoScamBlogEvent cryptoScamBlogEvent = retrived.get();
+          Assertions.assertTrue(cryptoScamBlogEvent.getBlogActive());
+          Assertions.assertEquals(new String[]{"scam"}, cryptoScamBlogEvent.getTags());
+          return cryptoScamBlogEvent.getId();
+        })
+        .onSuccess(id -> {
+        })
+        .onFailure(id -> testContext.failNow(id));
+    });
+
   }
 }
