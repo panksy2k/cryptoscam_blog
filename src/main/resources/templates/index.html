@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,300,300&display=swap&subset=latin-ext"
+          th:rel="stylesheet">
+    <link th:href="@{/static/css/main.css}" href="static/css/main.css" rel="stylesheet">
+    <title>Crypto Scam</title>
+</head>
+<body class="with-header position-relative" data-th-spy="scroll" data-target="#sections-nav" data-offset="80">
+<header class="header">
+    <div class="container-fluid-limited d-flex align-items-center justify-content-between">
+        <a th:href="index.html" class="header-brand">
+            // pankaj.codes
+        </a>
+
+    </div>
+</header>
+</body>
+<script th:src="@{/static/js/all.js}"></script>
+<script>
+    // Bootstrap form validation example
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+</html>
