@@ -5,6 +5,7 @@ import com.crypto.scams.cryptoscam.config.EmbeddedApplicationConfig;
 import com.crypto.scams.cryptoscam.errors.AccessDeniedException;
 import com.crypto.scams.cryptoscam.errors.DependencyCreationException;
 import com.crypto.scams.cryptoscam.errors.ValidationException;
+import com.crypto.scams.cryptoscam.models.CryptoScamBlogEvent;
 import com.crypto.scams.cryptoscam.module.ApplicationModule;
 import com.crypto.scams.cryptoscam.web.CryptoBlogEventController;
 import com.google.inject.Guice;
@@ -22,6 +23,7 @@ import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.templ.thymeleaf.ThymeleafTemplateEngine;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,22 +85,38 @@ public class CryptoScamBlogProcess extends AbstractVerticle {
           context.response().putHeader("Content-Type", "text/html").setStatusCode(200).end(message);
         });
 
-        router.route(HttpMethod.GET, "/").handler(rc -> {
-            JsonObject binding = new JsonObject();
+        router.route(HttpMethod.GET, "/api/blog/:id").handler(rc -> {
+                    String eventId = rc.pathParam("id");
 
-            thymeleafTemplateEngine.render(binding, "templates/index.html", res -> {
-                if (res.succeeded()) {
-                    rc.response().end(res.result());
-                } else {
-                    rc.fail(res.cause());
-                }
-            });
+                    final JsonObject binder = new JsonObject();
+
+                    Future<Optional<CryptoScamBlogEvent>> cryptoScamEvent = _controller.findCryptoScamEvent(eventId);
+                    cryptoScamEvent.onComplete(blogHandler -> {
+                        if (blogHandler.succeeded() && blogHandler.result().isPresent()) {
+                            CryptoScamBlogEvent result = blogHandler.result().get();
+
+                            binder.put("title", result.getTitle());
+                            binder.put("description", result.getDescription());
+
+                            thymeleafTemplateEngine.render(binder, "templates/index.html", res -> {
+                                if (res.succeeded()) {
+                                    rc.response().putHeader("Content-Type", "text/html").setStatusCode(200).end(res.result());
+                                } else {
+                                    rc.fail(res.cause());
+                                }
+                            });
+
+                        } else {
+                            rc.response().putHeader("Content-Type", "text/html").setStatusCode(200).end();
+                        }
+                    });
         });
 
         router.route("/api/*").handler(BodyHandler.create());
         router.route("/api/*").handler(CorsHandler.create("*"));
 
-        router.route("/api/blog/create/:blogId").handler(_controller::createCryptoScamBlogEntry);
+        router.route("/api/blog/create").handler(_controller::createCryptoScamBlogEntry);
+
         router.route("/api/*").failureHandler(context -> {
             if (context.failed()) {
                 if (context.failed()) {

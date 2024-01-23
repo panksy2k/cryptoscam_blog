@@ -22,17 +22,17 @@ public class ApplicationModule extends AbstractModule {
     private final CryptoBlogEventController _controller;
 
     public ApplicationModule(Vertx vertx, ApplicationConfiguration envAppConfig) throws DependencyCreationException {
-      SqlClient dbClient = PgPool.client(vertx, envAppConfig.getDatabaseUrl());
-      _repository = new CryptoScamBlogEventRepositoryImpl(vertx, dbClient);
-      _repository.createCryptoScamBlogEventTable()
-          .onSuccess(h -> System.out.println("Created Table!"))
-          .onFailure(h -> System.out.println("Error whilst creating Table!"));
-      _service = new CryptoBlogEventServiceImpl(_repository);
-      _controller = new CryptoBlogEventController(_service);
+        SqlClient dbClient = PgPool.client(vertx, envAppConfig.getDatabaseUrl());
+        _repository = new CryptoScamBlogEventRepositoryImpl(vertx, dbClient);
+        _repository.createCryptoScamBlogEventTable()
+                .onSuccess(h -> System.out.println("Created Table!"))
+                .onFailure(h -> System.out.println("Error whilst creating Table!"));
+        _service = new CryptoBlogEventServiceImpl(_repository);
+        _controller = new CryptoBlogEventController(_service);
     }
 
-  @Override
-  protected void configure() {
-    bind(CryptoScamBlogProcess.class).toInstance(new CryptoScamBlogProcess(_controller));
-  }
+    @Override
+    protected void configure() {
+        bind(CryptoScamBlogProcess.class).toInstance(new CryptoScamBlogProcess(_controller));
+    }
 }

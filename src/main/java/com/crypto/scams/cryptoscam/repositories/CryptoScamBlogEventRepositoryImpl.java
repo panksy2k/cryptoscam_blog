@@ -25,11 +25,13 @@ public class CryptoScamBlogEventRepositoryImpl implements CryptoScamBlogEventRep
   @Override
   public Future<CryptoScamBlogEvent> saveCryptoScamEvent(CryptoScamBlogEvent blogEvent) {
     String sql =
-      "insert into crypto_scam_event (event_id, title, description, other_reference_url, is_active, tags) values ($1, $2, $3, "
-        + "$4, $5, $6) returning event_id;";
+      "insert into crypto_scam_event (event_id, title, description, other_reference_url, is_active, name, tags) values ($1, $2, $3, "
+        + "$4, $5, $6, $7) returning event_id;";
 
     Tuple recordFieldsTuple =
-      Tuple.of(blogEvent.getId(), blogEvent.getTitle(), blogEvent.getDescription(), blogEvent.getReference(), blogEvent.getBlogActive(), blogEvent.getTags());
+      Tuple.of(blogEvent.getId(), blogEvent.getTitle(), blogEvent.getDescription(), blogEvent.getReference(), blogEvent.getBlogActive(),
+              blogEvent.getBlogName(),
+              blogEvent.getTags());
 
     Future<CryptoScamBlogEvent> persistedResult = this.pgClient.preparedQuery(sql)
       .execute(recordFieldsTuple)
@@ -56,7 +58,8 @@ public class CryptoScamBlogEventRepositoryImpl implements CryptoScamBlogEventRep
     String sqlUpdate = "update crypto_scam_event set title = $1, description = $2, other_reference_url = $3, is_active = $4, tags = $5 where event_id = $6";
 
     return pgClient.preparedQuery(sqlUpdate)
-      .execute(Tuple.of(blogEvent.getTitle(), blogEvent.getDescription(), blogEvent.getReference(), blogEvent.getBlogActive(), blogEvent.getTags(), blogEvent.getId()))
+      .execute(Tuple.of(blogEvent.getTitle(), blogEvent.getDescription(), blogEvent.getReference(),
+              blogEvent.getBlogActive(), blogEvent.getTags(), blogEvent.getId()))
       .flatMap(rowset -> {
           if(rowset.rowCount() == 1) {
             return Future.succeededFuture(blogEvent);

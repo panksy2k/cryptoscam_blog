@@ -45,6 +45,7 @@ public class CryptoScamBlogEventRepositoryImplTest {
     public void testCreateCryptoScamEvent(VertxTestContext context) {
         CryptoScamBlogEvent data = new CryptoScamBlogEvent(2L, "kucisev.vip scam", "There is this gang of people...",
                 "http://somewebsite.co.uk", true,
+                "kucisev.vip",
                 Arrays.asList("kucoin", "kucisev", "crypto", "scam", "exchangescam"));
 
         context.verify(() -> {
@@ -63,7 +64,7 @@ public class CryptoScamBlogEventRepositoryImplTest {
         Checkpoint createCP = testContext.checkpoint();
         Checkpoint updateCP = testContext.checkpoint();
         CryptoScamBlogEvent initial =
-                new CryptoScamBlogEvent(1L, "Test Title", "Test Desc", "TEST REF", false, Arrays.asList("FRAUD"));
+                new CryptoScamBlogEvent(1L, "Test Title", "Test Desc", "TEST REF", false, "kusisev.vip", Arrays.asList("FRAUD"));
 
         //When
         testContext.verify(() -> {
@@ -76,7 +77,9 @@ public class CryptoScamBlogEventRepositoryImplTest {
                     })
                     .map(existing -> new CryptoScamBlogEvent(existing.getId(), existing.getTitle(),
                             existing.getDescription(),
-                            existing.getReference(), true, Arrays.asList("scam")))
+                            existing.getReference(), true,
+                            "kucisev.vip",
+                            Arrays.asList("scam")))
                     .compose(changedEntry -> {
                         updateCP.flag();
                         return SUT.updateCryptoScamEvent(changedEntry);
@@ -87,6 +90,7 @@ public class CryptoScamBlogEventRepositoryImplTest {
                         Assertions.assertTrue(retrived.isPresent());
                         CryptoScamBlogEvent cryptoScamBlogEvent = retrived.get();
                         Assertions.assertTrue(cryptoScamBlogEvent.getBlogActive());
+                        Assertions.assertEquals("kucisev.vip", cryptoScamBlogEvent.getBlogName());
                         Assertions.assertEquals(new String[]{"scam"}, cryptoScamBlogEvent.getTags());
                         return cryptoScamBlogEvent.getId();
                     })

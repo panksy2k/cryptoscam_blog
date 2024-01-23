@@ -13,11 +13,30 @@
 <header class="header">
     <div class="container-fluid-limited d-flex align-items-center justify-content-between">
         <a th:href="index.html" class="header-brand">
-            // pankaj.codes
+            // crypto.scams
         </a>
-
+        <span th:text="${title}"/>
     </div>
 </header>
+<main class="content">
+    <div class="container-fluid-limited">
+        <div class="row">
+            <div class="col col-xl-9">
+                <section id="section-01" class="section section-sub-header animation interaction-in">
+                    <div class="section-body">
+                        <div class="jumbotron jumbotron-fluid pt-6 pt-lg-8 pb-0 mb-0">
+                            <h2 class="display-1 display-animated display-animated-in animation-translate animation-item-2">
+                                <span th:text="${title}"/>
+                            </h2>
+                            <p class="lead animation-translate animation-item-3"
+                               th:text="${description}">Senior Java Developer</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</main>
 </body>
 <script th:src="@{/static/js/all.js}"></script>
 <script>

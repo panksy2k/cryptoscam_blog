@@ -31,5 +31,5 @@ To run your application:
 
 To create e BLOG entry:
 ```
-http -f POST http://localhost:8080/api/blog/create/1 < /Users/pankajpardasani/Projects/cryptoscam/src/main/resources/blogCreate.json
+http -f POST http://localhost:8080/api/blog/create < /Users/pankajpardasani/Projects/cryptoscam/src/main/resources/blogCreate.json
 ```

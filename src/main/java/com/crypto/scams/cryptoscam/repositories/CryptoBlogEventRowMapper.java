@@ -14,6 +14,7 @@ public class CryptoBlogEventRowMapper implements Function<Row, CryptoScamBlogEve
         row.getString("description"),
         row.getString("other_reference_url"),
         row.getBoolean("is_active"),
+        row.getString("name"),
         Arrays.asList(row.getArrayOfStrings("tags")));
   }
 }
