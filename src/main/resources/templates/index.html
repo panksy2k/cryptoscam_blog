@@ -15,21 +15,21 @@
         <a th:href="index.html" class="header-brand">
             // crypto.scams
         </a>
-        <span th:text="${title}"/>
     </div>
 </header>
 <main class="content">
     <div class="container-fluid-limited">
         <div class="row">
             <div class="col col-xl-9">
-                <section id="section-01" class="section section-sub-header animation interaction-in">
+                <section id="section-02" class="section animation">
                     <div class="section-body">
-                        <div class="jumbotron jumbotron-fluid pt-6 pt-lg-8 pb-0 mb-0">
-                            <h2 class="display-1 display-animated display-animated-in animation-translate animation-item-2">
-                                <span th:text="${title}"/>
-                            </h2>
-                            <p class="lead animation-translate animation-item-3"
-                               th:text="${description}">Senior Java Developer</p>
+                        <div class="row">
+                            <div class="col col-xl-10">
+                                <h2 class="section-title animation-translate-overline animation-item-1"><p th:text="${title}"/></h2>
+                                <article class="article animation-translate animation-item-2">
+                                    <p th:utext="${description}"/>
+                                </article>
+                            </div>
                         </div>
                     </div>
                 </section>
